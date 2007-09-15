@@ -45,7 +45,7 @@
 
 Name:           jakarta-commons-pool
 Version:        1.3
-Release:        %mkrel 9.2.1
+Release:        %mkrel 9.2.2
 Epoch:          0
 Summary:        Jakarta Commons Pool Package
 License:        Apache Software License
@@ -91,8 +91,6 @@ Obsoletes:      %{short_name} < %{epoch}:%{version}-%{release}
 
 %if %{gcj_support}
 BuildRequires:          java-gcj-compat-devel
-Requires(post):         java-gcj-compat
-Requires(postun):       java-gcj-compat
 %endif
 
 %description
