@@ -45,7 +45,7 @@
 
 Name:           jakarta-commons-pool
 Version:        1.3
-Release:        %mkrel 9.2.2
+Release:        %mkrel 9.2.3
 Epoch:          0
 Summary:        Jakarta Commons Pool Package
 License:        Apache Software License
@@ -64,7 +64,7 @@ Patch0:         jakarta-commons-pool-build.patch
 Url:            http://jakarta.apache.org/commons/%{base_name}/
 BuildRequires:  ant
 BuildRequires:  junit
-BuildRequires:  jpackage-utils > 0:1.6
+BuildRequires:  java-rpmbuild > 0:1.6
 BuildRequires:  java-javadoc
 %if %{with_maven}
 BuildRequires:  maven >= 0:1.1
