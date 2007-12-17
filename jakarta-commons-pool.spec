@@ -85,7 +85,6 @@ BuildRequires:  xerces-j2
 %if ! %{gcj_support}
 BuildArch:      noarch
 %endif
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root
 Provides:       %{short_name} = %{epoch}:%{version}-%{release} 
 Obsoletes:      %{short_name} < %{epoch}:%{version}-%{release}
 
