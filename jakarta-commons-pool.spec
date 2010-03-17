@@ -45,7 +45,7 @@
 
 Name:           jakarta-commons-pool
 Version:        1.3
-Release:        %mkrel 9.2.5
+Release:        %mkrel 9.2.6
 Epoch:          0
 Summary:        Jakarta Commons Pool Package
 License:        Apache Software License
