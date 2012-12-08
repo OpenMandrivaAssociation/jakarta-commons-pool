@@ -161,34 +161,34 @@ maven \
 %{ant} -f pool-tomcat5-build.xml
 
 %install
-rm -rf %{buildroot}
+rm -rf $RPM_BUILD_ROOT
 # jars
-install -d -m 755 %{buildroot}%{_javadir}
+install -d -m 755 $RPM_BUILD_ROOT%{_javadir}
 %if %{with_maven}
-install -m 644 target/%{short_name}-%{version}.jar %{buildroot}%{_javadir}/%{name}-%{version}.jar
+install -m 644 target/%{short_name}-%{version}.jar $RPM_BUILD_ROOT%{_javadir}/%{name}-%{version}.jar
 %else
-install -m 644 dist/%{short_name}-%{version}.jar %{buildroot}%{_javadir}/%{name}-%{version}.jar
+install -m 644 dist/%{short_name}-%{version}.jar $RPM_BUILD_ROOT%{_javadir}/%{name}-%{version}.jar
 %endif
 
 #tomcat5 jar
-install -m 644 pool-tomcat5/%{short_name}-tomcat5.jar %{buildroot}%{_javadir}/%{name}-tomcat5-%{version}.jar
+install -m 644 pool-tomcat5/%{short_name}-tomcat5.jar $RPM_BUILD_ROOT%{_javadir}/%{name}-tomcat5-%{version}.jar
 
-(cd %{buildroot}%{_javadir} && for jar in *-%{version}*; do ln -sf ${jar} `echo $jar| sed  "s|jakarta-||g"`; done)
-(cd %{buildroot}%{_javadir} && for jar in *-%{version}*; do ln -sf ${jar} `echo $jar| sed  "s|-%{version}||g"`; done)
+(cd $RPM_BUILD_ROOT%{_javadir} && for jar in *-%{version}*; do ln -sf ${jar} `echo $jar| sed  "s|jakarta-||g"`; done)
+(cd $RPM_BUILD_ROOT%{_javadir} && for jar in *-%{version}*; do ln -sf ${jar} `echo $jar| sed  "s|-%{version}||g"`; done)
 # javadoc
-install -d -m 755 %{buildroot}%{_javadocdir}/%{name}-%{version}
+install -d -m 755 $RPM_BUILD_ROOT%{_javadocdir}/%{name}-%{version}
 %if %{with_maven}
-cp -pr target/docs/apidocs/* %{buildroot}%{_javadocdir}/%{name}-%{version}
+cp -pr target/docs/apidocs/* $RPM_BUILD_ROOT%{_javadocdir}/%{name}-%{version}
 rm -rf target/docs/apidocs
 %else
-cp -pr dist/docs/api/* %{buildroot}%{_javadocdir}/%{name}-%{version}
+cp -pr dist/docs/api/* $RPM_BUILD_ROOT%{_javadocdir}/%{name}-%{version}
 %endif
-ln -s %{name}-%{version} %{buildroot}%{_javadocdir}/%{name} 
+ln -s %{name}-%{version} $RPM_BUILD_ROOT%{_javadocdir}/%{name} 
 
 %if %{with_maven}
 # manual
-install -d -m 755 %{buildroot}%{_docdir}/%{name}-%{version}
-cp -pr target/docs/* %{buildroot}%{_docdir}/%{name}-%{version}
+install -d -m 755 $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
+cp -pr target/docs/* $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
 %endif
 
 %if %{gcj_support}
@@ -196,7 +196,7 @@ cp -pr target/docs/* %{buildroot}%{_docdir}/%{name}-%{version}
 %endif
 
 %clean
-rm -rf %{buildroot}
+rm -rf $RPM_BUILD_ROOT
 
 %if %{gcj_support}
 %post
@@ -265,3 +265,67 @@ fi
 %defattr(0644,root,root,0755)
 %doc %{_docdir}/%{name}-%{version}
 %endif
+
+
+%changelog
+* Wed May 04 2011 Oden Eriksson <oeriksson@mandriva.com> 0:1.3-9.2.8mdv2011.0
++ Revision: 665808
+- mass rebuild
+
+* Fri Dec 03 2010 Oden Eriksson <oeriksson@mandriva.com> 0:1.3-9.2.7mdv2011.0
++ Revision: 606062
+- rebuild
+
+* Wed Mar 17 2010 Oden Eriksson <oeriksson@mandriva.com> 0:1.3-9.2.6mdv2010.1
++ Revision: 523005
+- rebuilt for 2010.1
+
+* Wed Sep 02 2009 Christophe Fergeau <cfergeau@mandriva.com> 0:1.3-9.2.5mdv2010.0
++ Revision: 425444
+- rebuild
+
+* Sat Mar 07 2009 Antoine Ginies <aginies@mandriva.com> 0:1.3-9.2.4mdv2009.1
++ Revision: 351291
+- rebuild
+
+* Thu Feb 14 2008 Thierry Vignaud <tv@mandriva.org> 0:1.3-9.2.3mdv2009.0
++ Revision: 167950
+- fix no-buildroot-tag
+- kill re-definition of %%buildroot on Pixel's request
+
+* Sun Dec 16 2007 Anssi Hannula <anssi@mandriva.org> 0:1.3-9.2.3mdv2008.1
++ Revision: 120916
+- buildrequire java-rpmbuild, i.e. build with icedtea on x86(_64)
+
+* Sat Sep 15 2007 Anssi Hannula <anssi@mandriva.org> 0:1.3-9.2.2mdv2008.0
++ Revision: 87416
+- rebuild to filter out autorequires of GCJ AOT objects
+- remove unnecessary Requires(post) on java-gcj-compat
+
+* Sat Jun 30 2007 David Walluck <walluck@mandriva.org> 0:1.3-9.2.1mdv2008.0
++ Revision: 46025
+- sync with FC
+
+
+* Thu Mar 15 2007 Christiaan Welvaart <spturtle@mandriva.org> 1.3-2.2mdv2007.1
++ Revision: 143929
+- rebuild for 2007.1
+- Import jakarta-commons-pool
+
+* Sun Jul 23 2006 David Walluck <walluck@mandriva.org> 0:1.3-2.1mdv2007.0
+- bump release
+
+* Fri Jun 02 2006 David Walluck <walluck@mandriva.org> 0:1.3-1.1mdv2007.0
+- 1.3
+- rebuild for libgcj.so.7
+- aot compile
+
+* Sun May 22 2005 David Walluck <walluck@mandriva.org> 0:1.2-2.1mdk
+- release
+
+* Tue Aug 24 2004 Randy Watler <rwatler at finali.com> - 0:1.2-2jpp
+- Rebuild with ant-1.6.2
+
+* Fri Jun 25 2004 Kaj J. Niemi <kajtzu@fi.basen.net> 0:1.2-1jpp
+- Update to 1.2 (tomcat 5.0.27 wants it)
+
