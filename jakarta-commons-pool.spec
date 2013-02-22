@@ -28,16 +28,10 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-%define _without_maven 1
+%bcond_with maven
 %define _with_gcj_support 1
 
 %define gcj_support %{?_with_gcj_support:1}%{!?_with_gcj_support:%{?_without_gcj_support:0}%{!?_without_gcj_support:%{?_gcj_support:%{_gcj_support}}%{!?_gcj_support:0}}}
-
-# If you don't want to build with maven, and use straight ant instead,
-# give rpmbuild option '--without maven'
-
-%define with_maven %{!?_without_maven:1}%{?_without_maven:0}
-%define without_maven %{?_without_maven:1}%{!?_without_maven:0}
 
 %define base_name       pool
 %define short_name      commons-%{base_name}
@@ -64,10 +58,10 @@ Patch0:         jakarta-commons-pool-build.patch
 
 Url:            http://jakarta.apache.org/commons/%{base_name}/
 BuildRequires:  ant
-BuildRequires:  junit
+#BuildRequires:  junit
 BuildRequires:  java-rpmbuild > 0:1.6
 BuildRequires:  java-javadoc
-%if %{with_maven}
+%if %{with maven}
 BuildRequires:  maven >= 0:1.1
 BuildRequires:  maven-plugins-base
 BuildRequires:  maven-plugin-test
@@ -115,7 +109,7 @@ Group:          Development/Java
 %description tomcat5
 Pool dependency for Tomcat5
 
-%if %{with_maven}
+%if %{with maven}
 %package manual
 Summary:        Documents for %{name}
 Group:          Development/Java
@@ -141,7 +135,7 @@ cp %{SOURCE6} .
 
 %build
 mkdir ./tmp
-%if %{with_maven}
+%if %{with maven}
 for p in $(find . -name project.xml); do
     pushd $(dirname $p)
     cp project.xml project.xml.orig
@@ -164,7 +158,7 @@ maven \
 rm -rf $RPM_BUILD_ROOT
 # jars
 install -d -m 755 $RPM_BUILD_ROOT%{_javadir}
-%if %{with_maven}
+%if %{with maven}
 install -m 644 target/%{short_name}-%{version}.jar $RPM_BUILD_ROOT%{_javadir}/%{name}-%{version}.jar
 %else
 install -m 644 dist/%{short_name}-%{version}.jar $RPM_BUILD_ROOT%{_javadir}/%{name}-%{version}.jar
@@ -177,7 +171,7 @@ install -m 644 pool-tomcat5/%{short_name}-tomcat5.jar $RPM_BUILD_ROOT%{_javadir}
 (cd $RPM_BUILD_ROOT%{_javadir} && for jar in *-%{version}*; do ln -sf ${jar} `echo $jar| sed  "s|-%{version}||g"`; done)
 # javadoc
 install -d -m 755 $RPM_BUILD_ROOT%{_javadocdir}/%{name}-%{version}
-%if %{with_maven}
+%if %{with maven}
 cp -pr target/docs/apidocs/* $RPM_BUILD_ROOT%{_javadocdir}/%{name}-%{version}
 rm -rf target/docs/apidocs
 %else
@@ -185,7 +179,7 @@ cp -pr dist/docs/api/* $RPM_BUILD_ROOT%{_javadocdir}/%{name}-%{version}
 %endif
 ln -s %{name}-%{version} $RPM_BUILD_ROOT%{_javadocdir}/%{name} 
 
-%if %{with_maven}
+%if %{with maven}
 # manual
 install -d -m 755 $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
 cp -pr target/docs/* $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
@@ -260,12 +254,11 @@ fi
 %doc %{_javadocdir}/%{name}-%{version}
 %doc %{_javadocdir}/%{name}
 
-%if %{with_maven}
+%if %{with maven}
 %files manual
 %defattr(0644,root,root,0755)
 %doc %{_docdir}/%{name}-%{version}
 %endif
-
 
 %changelog
 * Wed May 04 2011 Oden Eriksson <oeriksson@mandriva.com> 0:1.3-9.2.8mdv2011.0
