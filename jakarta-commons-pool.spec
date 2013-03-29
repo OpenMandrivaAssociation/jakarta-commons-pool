@@ -33,58 +33,57 @@
 
 %define gcj_support %{?_with_gcj_support:1}%{!?_with_gcj_support:%{?_without_gcj_support:0}%{!?_without_gcj_support:%{?_gcj_support:%{_gcj_support}}%{!?_gcj_support:0}}}
 
-%define base_name       pool
-%define short_name      commons-%{base_name}
-%define section         free
+%define base_name pool
+%define short_name commons-%{base_name}
+%define section free
 
-Name:           jakarta-commons-pool
-Version:        1.3
-Release:        %mkrel 9.2.8
-Epoch:          0
-Summary:        Jakarta Commons Pool Package
-License:        Apache Software License
-Group:          Development/Java
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
-Source0:        http://www.apache.org/dist/jakarta/commons/%{base_name}/source/%{short_name}-%{version}-src.tar.gz
-Source1:        pom-maven2jpp-depcat.xsl
-Source2:        pom-maven2jpp-newdepmap.xsl
-Source3:        pom-maven2jpp-mapdeps.xsl
-Source4:        %{base_name}-%{version}-jpp-depmap.xml
-Source5:        commons-build.tar.gz
+Name:			jakarta-commons-pool
+Version:		1.3
+Release:		9.2.9
+Epoch:			0
+Summary:		Jakarta Commons Pool Package
+License:		Apache Software License
+Group:			Development/Java
+Source0:		http://www.apache.org/dist/jakarta/commons/%{base_name}/source/%{short_name}-%{version}-src.tar.gz
+Source1:		pom-maven2jpp-depcat.xsl
+Source2:		pom-maven2jpp-newdepmap.xsl
+Source3:		pom-maven2jpp-mapdeps.xsl
+Source4:		%{base_name}-%{version}-jpp-depmap.xml
+Source5:		commons-build.tar.gz
 # svn export -r '{2007-02-15}' http://svn.apache.org/repos/asf/jakarta/commons/proper/commons-build/trunk/ commons-build
 # tar czf commons-build.tar.gz commons-build
-Source6:        pool-tomcat5-build.xml
-Patch0:         jakarta-commons-pool-build.patch
+Source6:		pool-tomcat5-build.xml
+Patch0:			jakarta-commons-pool-build.patch
 
-Url:            http://jakarta.apache.org/commons/%{base_name}/
-BuildRequires:  ant
-#BuildRequires:  junit
-BuildRequires:  java-rpmbuild > 0:1.6
-BuildRequires:  java-javadoc
+Url:			http://jakarta.apache.org/commons/%{base_name}/
+BuildRequires:	ant
+#BuildRequires:	junit
+BuildRequires:	java-rpmbuild > 0:1.6
+BuildRequires:	java-javadoc
 %if %{with maven}
-BuildRequires:  maven >= 0:1.1
-BuildRequires:  maven-plugins-base
-BuildRequires:  maven-plugin-test
-BuildRequires:  maven-plugin-xdoc
-BuildRequires:  maven-plugin-license
-BuildRequires:  maven-plugin-changes
-BuildRequires:  maven-plugin-jdepend
-BuildRequires:  maven-plugin-jdiff
-BuildRequires:  maven-plugin-jxr
-BuildRequires:  maven-plugin-tasklist
-BuildRequires:  saxon
-BuildRequires:  saxon-scripts
-BuildRequires:  xml-commons-jaxp-1.3-apis
-BuildRequires:  xerces-j2
+BuildRequires:	maven >= 0:1.1
+BuildRequires:	maven-plugins-base
+BuildRequires:	maven-plugin-test
+BuildRequires:	maven-plugin-xdoc
+BuildRequires:	maven-plugin-license
+BuildRequires:	maven-plugin-changes
+BuildRequires:	maven-plugin-jdepend
+BuildRequires:	maven-plugin-jdiff
+BuildRequires:	maven-plugin-jxr
+BuildRequires:	maven-plugin-tasklist
+BuildRequires:	saxon
+BuildRequires:	saxon-scripts
+BuildRequires:	xml-commons-jaxp-1.3-apis
+BuildRequires:	xerces-j2
 %endif
 %if ! %{gcj_support}
-BuildArch:      noarch
+BuildArch:		noarch
 %endif
-Provides:       %{short_name} = %{epoch}:%{version}-%{release} 
-Obsoletes:      %{short_name} < %{epoch}:%{version}-%{release}
+Provides:		%{short_name} = %{epoch}:%{version}-%{release} 
+Obsoletes:		%{short_name} < %{epoch}:%{version}-%{release}
 
 %if %{gcj_support}
-BuildRequires:          java-gcj-compat-devel
+BuildRequires:	java-gcj-compat-devel
 %endif
 
 %description
@@ -95,24 +94,24 @@ encourage support of an interface that makes these implementations
 interchangeable.
 
 %package javadoc
-Summary:        Javadoc for %{name}
-Group:          Development/Java
-Requires:       java-javadoc
+Summary:		Javadoc for %{name}
+Group:			Development/Java
+Requires:		java-javadoc
 
 %description javadoc
 Javadoc for %{name}.
 
 %package tomcat5
-Summary:        Pool dependency for Tomcat5
-Group:          Development/Java
+Summary:		Pool dependency for Tomcat5
+Group:			Development/Java
 
 %description tomcat5
-Pool dependency for Tomcat5
+Pool dependency for Tomcat5.
 
 %if %{with maven}
 %package manual
-Summary:        Documents for %{name}
-Group:          Development/Java
+Summary:		Documents for %{name}
+Group:			Development/Java
 
 %description manual
 %{summary}.
@@ -155,7 +154,6 @@ maven \
 %{ant} -f pool-tomcat5-build.xml
 
 %install
-rm -rf $RPM_BUILD_ROOT
 # jars
 install -d -m 755 $RPM_BUILD_ROOT%{_javadir}
 %if %{with maven}
@@ -189,8 +187,6 @@ cp -pr target/docs/* $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
 %{_bindir}/aot-compile-rpm
 %endif
 
-%clean
-rm -rf $RPM_BUILD_ROOT
 
 %if %{gcj_support}
 %post
