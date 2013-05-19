@@ -33,31 +33,34 @@
 
 %define gcj_support %{?_with_gcj_support:1}%{!?_with_gcj_support:%{?_without_gcj_support:0}%{!?_without_gcj_support:%{?_gcj_support:%{_gcj_support}}%{!?_gcj_support:0}}}
 
-%define base_name pool
-%define short_name commons-%{base_name}
-%define section free
+%define base_name	pool
+%define short_name	commons-%{base_name}
+%define section		free
 
-Name:			jakarta-commons-pool
-Version:		1.3
-Release:		9.2.9
-Epoch:			0
-Summary:		Jakarta Commons Pool Package
-License:		Apache Software License
-Group:			Development/Java
-Source0:		http://www.apache.org/dist/jakarta/commons/%{base_name}/source/%{short_name}-%{version}-src.tar.gz
-Source1:		pom-maven2jpp-depcat.xsl
-Source2:		pom-maven2jpp-newdepmap.xsl
-Source3:		pom-maven2jpp-mapdeps.xsl
-Source4:		%{base_name}-%{version}-jpp-depmap.xml
-Source5:		commons-build.tar.gz
+Summary:	Jakarta Commons Pool Package
+Name:		jakarta-commons-pool
+Version:	1.3
+Release:	10
+License:	Apache Software License
+Group:		Development/Java
+Url:		http://jakarta.apache.org/commons/%{base_name}/
+Source0:	http://www.apache.org/dist/jakarta/commons/%{base_name}/source/%{short_name}-%{version}-src.tar.gz
+Source1:	pom-maven2jpp-depcat.xsl
+Source2:	pom-maven2jpp-newdepmap.xsl
+Source3:	pom-maven2jpp-mapdeps.xsl
+Source4:	%{base_name}-%{version}-jpp-depmap.xml
+Source5:	commons-build.tar.gz
 # svn export -r '{2007-02-15}' http://svn.apache.org/repos/asf/jakarta/commons/proper/commons-build/trunk/ commons-build
 # tar czf commons-build.tar.gz commons-build
-Source6:		pool-tomcat5-build.xml
-Patch0:			jakarta-commons-pool-build.patch
+Source6:	pool-tomcat5-build.xml
+Patch0:		jakarta-commons-pool-build.patch
+%if !%{gcj_support}
+BuildArch:	noarch
+%else
+BuildRequires:	java-gcj-compat-devel
+%endif
 
-Url:			http://jakarta.apache.org/commons/%{base_name}/
 BuildRequires:	ant
-#BuildRequires:	junit
 BuildRequires:	java-rpmbuild > 0:1.6
 BuildRequires:	java-javadoc
 %if %{with maven}
@@ -76,15 +79,7 @@ BuildRequires:	saxon-scripts
 BuildRequires:	xml-commons-jaxp-1.3-apis
 BuildRequires:	xerces-j2
 %endif
-%if ! %{gcj_support}
-BuildArch:		noarch
-%endif
-Provides:		%{short_name} = %{epoch}:%{version}-%{release} 
-Obsoletes:		%{short_name} < %{epoch}:%{version}-%{release}
-
-%if %{gcj_support}
-BuildRequires:	java-gcj-compat-devel
-%endif
+%rename		%{short_name}
 
 %description
 The goal of Pool package it to create and maintain an object 
@@ -94,24 +89,24 @@ encourage support of an interface that makes these implementations
 interchangeable.
 
 %package javadoc
-Summary:		Javadoc for %{name}
-Group:			Development/Java
-Requires:		java-javadoc
+Summary:	Javadoc for %{name}
+Group:		Development/Java
+Requires:	java-javadoc
 
 %description javadoc
 Javadoc for %{name}.
 
 %package tomcat5
-Summary:		Pool dependency for Tomcat5
-Group:			Development/Java
+Summary:	Pool dependency for Tomcat5
+Group:		Development/Java
 
 %description tomcat5
 Pool dependency for Tomcat5.
 
 %if %{with maven}
 %package manual
-Summary:		Documents for %{name}
-Group:			Development/Java
+Summary:	Documents for %{name}
+Group:		Development/Java
 
 %description manual
 %{summary}.
@@ -125,7 +120,7 @@ cat <<EOT
 
 EOT
 
-%setup -q -n %{short_name}-%{version}-src
+%setup -qn %{short_name}-%{version}-src
 # remove all binary libs
 find . -name "*.jar" -exec rm -f {} \;
 gzip -dc %{SOURCE5} | tar xf -
@@ -143,50 +138,49 @@ for p in $(find . -name project.xml); do
 done
 
 maven \
-        -Dmaven.javadoc.source=1.4 \
-        -Dmaven.repo.remote=file:/usr/share/maven/repository \
-        -Dmaven.home.local=$(pwd)/.maven \
-        jar javadoc xdoc:transform
+	-Dmaven.javadoc.source=1.4 \
+	-Dmaven.repo.remote=file:/usr/share/maven/repository \
+	-Dmaven.home.local=$(pwd)/.maven \
+	jar javadoc xdoc:transform
 %else
-%{ant} -Djava.io.tmpdir=. clean dist 
+%ant -Djava.io.tmpdir=. clean dist 
 %endif
 
-%{ant} -f pool-tomcat5-build.xml
+%ant -f pool-tomcat5-build.xml
 
 %install
 # jars
-install -d -m 755 $RPM_BUILD_ROOT%{_javadir}
+install -d -m 755 %{buildroot}%{_javadir}
 %if %{with maven}
-install -m 644 target/%{short_name}-%{version}.jar $RPM_BUILD_ROOT%{_javadir}/%{name}-%{version}.jar
+install -m 644 target/%{short_name}-%{version}.jar %{buildroot}%{_javadir}/%{name}-%{version}.jar
 %else
-install -m 644 dist/%{short_name}-%{version}.jar $RPM_BUILD_ROOT%{_javadir}/%{name}-%{version}.jar
+install -m 644 dist/%{short_name}-%{version}.jar %{buildroot}%{_javadir}/%{name}-%{version}.jar
 %endif
 
 #tomcat5 jar
-install -m 644 pool-tomcat5/%{short_name}-tomcat5.jar $RPM_BUILD_ROOT%{_javadir}/%{name}-tomcat5-%{version}.jar
+install -m 644 pool-tomcat5/%{short_name}-tomcat5.jar %{buildroot}%{_javadir}/%{name}-tomcat5-%{version}.jar
 
-(cd $RPM_BUILD_ROOT%{_javadir} && for jar in *-%{version}*; do ln -sf ${jar} `echo $jar| sed  "s|jakarta-||g"`; done)
-(cd $RPM_BUILD_ROOT%{_javadir} && for jar in *-%{version}*; do ln -sf ${jar} `echo $jar| sed  "s|-%{version}||g"`; done)
+(cd %{buildroot}%{_javadir} && for jar in *-%{version}*; do ln -sf ${jar} `echo $jar| sed  "s|jakarta-||g"`; done)
+(cd %{buildroot}%{_javadir} && for jar in *-%{version}*; do ln -sf ${jar} `echo $jar| sed  "s|-%{version}||g"`; done)
 # javadoc
-install -d -m 755 $RPM_BUILD_ROOT%{_javadocdir}/%{name}-%{version}
+install -d -m 755 %{buildroot}%{_javadocdir}/%{name}-%{version}
 %if %{with maven}
-cp -pr target/docs/apidocs/* $RPM_BUILD_ROOT%{_javadocdir}/%{name}-%{version}
+cp -pr target/docs/apidocs/* %{buildroot}%{_javadocdir}/%{name}-%{version}
 rm -rf target/docs/apidocs
 %else
-cp -pr dist/docs/api/* $RPM_BUILD_ROOT%{_javadocdir}/%{name}-%{version}
+cp -pr dist/docs/api/* %{buildroot}%{_javadocdir}/%{name}-%{version}
 %endif
-ln -s %{name}-%{version} $RPM_BUILD_ROOT%{_javadocdir}/%{name} 
+ln -s %{name}-%{version} %{buildroot}%{_javadocdir}/%{name} 
 
 %if %{with maven}
 # manual
-install -d -m 755 $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
-cp -pr target/docs/* $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
+install -d -m 755 %{buildroot}%{_docdir}/%{name}-%{version}
+cp -pr target/docs/* %{buildroot}%{_docdir}/%{name}-%{version}
 %endif
 
 %if %{gcj_support}
 %{_bindir}/aot-compile-rpm
 %endif
-
 
 %if %{gcj_support}
 %post
@@ -220,9 +214,7 @@ then
 fi
 %endif
 
-
 %files
-%defattr(0644,root,root,0755)
 %doc README.txt LICENSE.txt NOTICE.txt RELEASE-NOTES.txt
 %{_javadir}/%{name}.jar
 %{_javadir}/%{name}-%{version}.jar
@@ -230,91 +222,24 @@ fi
 %{_javadir}/%{short_name}-%{version}.jar
 
 %if %{gcj_support}
-%attr(-,root,root) 
 %dir %{_libdir}/gcj/%{name}
 %{_libdir}/gcj/%{name}/%{name}-%{version}.jar.db
 %{_libdir}/gcj/%{name}/%{name}-%{version}.jar.so
 %endif
 
 %files tomcat5
-%defattr(0644,root,root,0755)
 %{_javadir}/*-tomcat5*.jar
 
 %if %{gcj_support}
-%attr(-,root,root)
 %{_libdir}/gcj/%{name}/*-tomcat5*
 %endif
 
 %files javadoc
-%defattr(0644,root,root,0755)
 %doc %{_javadocdir}/%{name}-%{version}
 %doc %{_javadocdir}/%{name}
 
 %if %{with maven}
 %files manual
-%defattr(0644,root,root,0755)
 %doc %{_docdir}/%{name}-%{version}
 %endif
-
-%changelog
-* Wed May 04 2011 Oden Eriksson <oeriksson@mandriva.com> 0:1.3-9.2.8mdv2011.0
-+ Revision: 665808
-- mass rebuild
-
-* Fri Dec 03 2010 Oden Eriksson <oeriksson@mandriva.com> 0:1.3-9.2.7mdv2011.0
-+ Revision: 606062
-- rebuild
-
-* Wed Mar 17 2010 Oden Eriksson <oeriksson@mandriva.com> 0:1.3-9.2.6mdv2010.1
-+ Revision: 523005
-- rebuilt for 2010.1
-
-* Wed Sep 02 2009 Christophe Fergeau <cfergeau@mandriva.com> 0:1.3-9.2.5mdv2010.0
-+ Revision: 425444
-- rebuild
-
-* Sat Mar 07 2009 Antoine Ginies <aginies@mandriva.com> 0:1.3-9.2.4mdv2009.1
-+ Revision: 351291
-- rebuild
-
-* Thu Feb 14 2008 Thierry Vignaud <tv@mandriva.org> 0:1.3-9.2.3mdv2009.0
-+ Revision: 167950
-- fix no-buildroot-tag
-- kill re-definition of %%buildroot on Pixel's request
-
-* Sun Dec 16 2007 Anssi Hannula <anssi@mandriva.org> 0:1.3-9.2.3mdv2008.1
-+ Revision: 120916
-- buildrequire java-rpmbuild, i.e. build with icedtea on x86(_64)
-
-* Sat Sep 15 2007 Anssi Hannula <anssi@mandriva.org> 0:1.3-9.2.2mdv2008.0
-+ Revision: 87416
-- rebuild to filter out autorequires of GCJ AOT objects
-- remove unnecessary Requires(post) on java-gcj-compat
-
-* Sat Jun 30 2007 David Walluck <walluck@mandriva.org> 0:1.3-9.2.1mdv2008.0
-+ Revision: 46025
-- sync with FC
-
-
-* Thu Mar 15 2007 Christiaan Welvaart <spturtle@mandriva.org> 1.3-2.2mdv2007.1
-+ Revision: 143929
-- rebuild for 2007.1
-- Import jakarta-commons-pool
-
-* Sun Jul 23 2006 David Walluck <walluck@mandriva.org> 0:1.3-2.1mdv2007.0
-- bump release
-
-* Fri Jun 02 2006 David Walluck <walluck@mandriva.org> 0:1.3-1.1mdv2007.0
-- 1.3
-- rebuild for libgcj.so.7
-- aot compile
-
-* Sun May 22 2005 David Walluck <walluck@mandriva.org> 0:1.2-2.1mdk
-- release
-
-* Tue Aug 24 2004 Randy Watler <rwatler at finali.com> - 0:1.2-2jpp
-- Rebuild with ant-1.6.2
-
-* Fri Jun 25 2004 Kaj J. Niemi <kajtzu@fi.basen.net> 0:1.2-1jpp
-- Update to 1.2 (tomcat 5.0.27 wants it)
 
