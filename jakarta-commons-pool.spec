@@ -43,7 +43,7 @@ Version:	1.3
 Release:	10
 License:	Apache Software License
 Group:		Development/Java
-Url:		http://jakarta.apache.org/commons/%{base_name}/
+Url:		https://jakarta.apache.org/commons/%{base_name}/
 Source0:	http://www.apache.org/dist/jakarta/commons/%{base_name}/source/%{short_name}-%{version}-src.tar.gz
 Source1:	pom-maven2jpp-depcat.xsl
 Source2:	pom-maven2jpp-newdepmap.xsl
